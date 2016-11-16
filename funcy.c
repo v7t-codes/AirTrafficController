@@ -101,6 +101,7 @@ void main(){
   }
  }
 }
+
 void delay350ms(){
   unsigned int i;
   TMOD = 0x01;
