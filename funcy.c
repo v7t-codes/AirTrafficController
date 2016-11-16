@@ -17,10 +17,12 @@ sbit falseland = P2^5;
 void delay350ms();
 void main(){
   /*-----------------------------LANDING-------------------------------*/
+
   //po.o goes high when the plane is incoming and sends the status to p2.1
   //p2.1 is like a a person who checks the status of p1.1 which signals the airplane to land or not -----1__LAND----- otherwise 0
   //p0.2 senses the planes and sends the status to p2.1
   //p2.1 checks the stutus of p3.0,1 and send the status to p1.1 if 1 to terminal
+
   unsigned int i;
   in = 1;
   t1, t2 = 1;
@@ -58,16 +60,29 @@ void main(){
 
   /*-----------------------------TAKEOFF-------------------------------*/
 
-  /*p3.0 and p3.1 are terminals
+  /* p3.0 and p3.1 are terminals
   terminal is 1 if plane is there (use IR sensors)
   if plane wants to leave signal 1 from terminal to p2.0
   if ok, p3.3 or p3.4 are 1 ( for t0 and t1 respectively) -> priority to p3.1
-  if p0.0==1 or p2.1 == 1 or p0.1 == 0 -> wait (p3.6==0) else takeoff (p3.6==1)
-
-  */
+  if p0.0==1 or p2.1 == 1 or p0.1 == 0 -> wait (p3.6==0) else takeoff (p3.6==1) */
+  toff = 0;
   while((t1 | t2)==1){                        // only if there is a plane in either of the terminals
       if((t1s| t2s)==1){
         atct = 1;
+      }
+      if(in==1){
+        toff = 0;
+        for(i =0;i <5; i++)                 // toff stays for minimum of 2 secs
+        delay350ms();
+      }
+      else{
+        for(i= 0;i<5;i++){                   // Blink and stay on for a few seconds
+          toff = ~toff;
+          delay350ms();
+        }
+        for(i=0;i<5;i++){
+        toff = 1;
+        }
       }
   }
 
