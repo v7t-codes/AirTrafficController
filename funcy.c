@@ -22,7 +22,7 @@ void main(){
   //p2.1 is like a a person who checks the status of p1.1 which signals the airplane to land or not -----1__LAND----- otherwise 0
   //p0.2 senses the planes and sends the status to p2.1
   //p2.1 checks the stutus of p3.0,1 and send the status to p1.1 if 1 to terminal
-
+  unsigned int count = 1;
   unsigned int i;
   in = 1;
   t1, t2 = 1;
@@ -70,6 +70,9 @@ void main(){
       if((t1s| t2s)==1){
         atct = 1;
       }
+      if((t1 & t2)==1)
+         count = 2;
+    for(i= 0;i< count;i++){                  // do this twice if both planes want to leave
       if(in==1){
         toff = 0;
         for(i =0;i <5; i++)                 // toff stays for minimum of 2 secs
@@ -82,12 +85,11 @@ void main(){
         }
         for(i=0;i<5;i++){
         toff = 1;
-        }
-      }
+     }
+    }
+   }
   }
-
-  }
-
+ }
 }
 void delay350ms(){
   unsigned int i;
