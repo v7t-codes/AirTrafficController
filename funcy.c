@@ -45,8 +45,18 @@ void main(){
           delay350ms();
         }
         trueland = 1;                                 // Keep the YES to land signal high after blinking GREEN LED
-        P0^4 = t1;                                    // lights in the plane to direct to the free terminal
-        P0^5 = t2;
+        P0^4 = 0;                                    // lights in the plane to direct to the free terminal
+        P0^5 = 0;
+        if(t1 == 0){
+             P0^4 =1;
+             P0^5 =0;
+             }
+        else{
+            P0^4= 0;
+          if(t2 == 0) 
+            P0^5 = 1;
+            }
+          }
         }
       else
       {
