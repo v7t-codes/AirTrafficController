@@ -3,114 +3,216 @@
 sbit atcl = P2^1;
 sbit atct = P2^0;
 sbit in = P0^0;
-sbit landstat = P1^1;
-sbit rqsterm = P0^2;
-sbit clrterm = P1^0;
+//sbit landstat = P0^7;
+//sbit rqsterm = P1^0;
+//sbit clrterm = P1^7;
 sbit t1 =P3^0;
 sbit t2 =P3^1;
-sbit t1s =P3^3;
-sbit t2s =P3^4;
-sbit toff =P3^6;
+sbit t1s =P0^3;
+sbit t2s =P0^4;
+sbit toff =P2^7;
 sbit trueland = P2^4;
 sbit falseland = P2^5;
 
-void delay350ms();
-void main(){
-  /*-----------------------------LANDING-------------------------------*/
+//sbit yes=P3^5;
 
-  //po.o goes high when the plane is incoming and sends the status to p2.1
-  //p2.1 is like a a person who checks the status of p1.1 which signals the airplane to land or not -----1__LAND----- otherwise 0
-  //p0.2 senses the planes and sends the status to p2.1
-  //p2.1 checks the stutus of p3.0,1 and send the status to p1.1 if 1 to terminal
-  unsigned int count = 1;
-  unsigned int i;
-  in = 1;
-  t1, t2 = 1;
-  landstat =1;
-  t1s, t2s =1;                                     //for takeoff signals from t1 and t2
-  while(1){
-    if(in == 1){                                   //check if plane is incoming when yes
-      atcl = 1;                                    // send the incoming signal to atcl
-      delay350ms();
-      if((t1 & t2)== 0){                           //checking status of terminals, terminals go high when a plane is present
-        landstat = 1;
-      }
-      else if((t1 & t2) ==1){
-        landstat = 0;
-      }
-      delay350ms();
-      if(landstat ==1){
-        for(i=0;i<10;i++){
-          trueland = ~trueland ;
-          delay350ms();
-        }
-        trueland = 1;                                 // Keep the YES to land signal high after blinking GREEN LED
-        P0^4 = 0;                                    // lights in the plane to direct to the free terminal
-        P0^5 = 0;
-        if(t1 == 0){
-             P0^4 =1;
-             P0^5 =0;
-             }
-        else{
-            P0^4= 0;
-          if(t2 == 0) 
-            P0^5 = 1;
-            }
-          }
-        }
-      else
-      {
-        for(i=0;i<10;i++){
-          falseland= ~ falseland;
-          delay350ms();
-          }
-          falseland = 1;                                // Keep the NO to land signal high after blinking BLUE LED
-      }
-    }
+unsigned char x;
 
-  /*-----------------------------TAKEOFF-------------------------------*/
+//sbit a = P0^4;
+//sbit b=P0^5;
 
-  /* p3.0 and p3.1 are terminals
-  terminal is 1 if plane is there (use IR sensors)
-  if plane wants to leave signal 1 from terminal to p2.0
-  if ok, p3.3 or p3.4 are 1 ( for t0 and t1 respectively) -> priority to p3.1
-  if p0.0==1 or p2.1 == 1 or p0.1 == 0 -> wait (p3.6==0) else takeoff (p3.6==1) */
-  toff = 0;
-  while((t1 | t2)==1){                        // only if there is a plane in either of the terminals
-      if((t1s| t2s)==1){
-        atct = 1;
-      }
-      if((t1 & t2)==1)
-         count = 2;
-    for(i= 0;i< count;i++){                  // do this twice if both planes want to leave
-      if(in==1){
-        toff = 0;
-        for(i =0;i <5; i++)                 // toff stays for minimum of 2 secs
-        delay350ms();
-      }
-      else{
-        for(i= 0;i<5;i++){                   // Blink and stay on for a few seconds
-          toff = ~toff;
-          delay350ms();
-        }
-        for(i=0;i<5;i++){
-        toff = 1;
-     }
-    }
-   }
-  }
+void landing();
+void takeoff1();
+void takeoff12();
+void takeoff2();
+void blink();
+void delay();
+
+void landing() 
+{
+	
+atcl=1;
+atct=0;
+	if((t1 & t2)==1)	   	
+	{
+//	blink(falseland) ;
+for(x=0;x<10;x++)
+	{
+		falseland=~falseland;
+		delay();
+	}   	
+	 
+	
+}
+else 
+	{
+		toff=0;
+	
+//	blink(trueland);
+		for(x=0;x<10;x++)
+	{
+		trueland=~trueland;
+		delay();
+	}
+	delay();
+	toff=1;
+	//rqsterm=1;
+	if((t1==0)|((t1==0)&(t2==0)))
+	{
+//	blink(t1);
+		for(x=0;x<10;x++)
+	{
+		t1=~t1;
+		delay();
+	}
+	delay();
+	t1=1;
+	}
+	else
+	{
+//	blink(t2);
+		for(x=0;x<10;x++)
+	{
+		t2=~t2;
+		delay();
+	}
+	delay();
+	
+	t2=1;
+	}
+}
+	atcl=0;
+	in=0; 
+
+}
+void takeoff1()
+{
+if(t1)
+{
+atct=1;
+//if((t1s==1) & (t2s==0))
+{
+//blink(t1);
+	for(x=0;x<10;x++)
+	{
+		t1=~t1;
+		delay();
+	}
+	toff=1;
+delay();
+	toff=0;
+	t1=0;
+		atct=0;
+	t1s=0;
+	
+}
+}
+}
+void takeoff2()
+{
+	if(t2)
+	{
+	atct=1;
+//else if((t2s==1) & (t1s==0))
+//blink(t2);
+	for(x=0;x<10;x++)
+	{
+		t2=~t2;
+		delay();
+	}
+t2=0;
+toff=1;
+delay();
+toff=0;
+atct=0;
+t2s=0;
+}
+}
+void takeoff12()
+{
+	if(t1)
+	takeoff1();
+	delay();
+	delay();
+	if(t2)
+	takeoff2();
+	}
+void main()
+{
+AGAIN:	
+	t1s=0;
+t2s=0;
+  
+in=0; 
+atct =0;
+atcl=0;	
+while(1)
+{	
+	if(in)
+	{
+	landing();
+    goto AGAIN;
+	}
+if(t1s)
+{	
+ takeoff1();
+ delay();
+ if(!in)
+ {
+ toff=1;
+ }
+ else
+ {
+ landing();
+delay();
+ }
+	 goto AGAIN;
+ }
+ else if(t2s)
+{	
+ takeoff2();
+ delay();
+ if(!in)
+ {
+ toff=1;
+ }
+ else
+ {
+ landing();
+ delay();
+ }
+  goto AGAIN;
+ }
+ else if((t1s)&&(t2s))
+{	
+ takeoff12();
+ delay();
+ if(!in)
+ {
+ toff=1;
+ }
+ else
+ {
+ landing();
+ delay();
+ }
+  goto AGAIN;
+ }
+ else
+	 goto AGAIN;
  }
 }
-
-void delay350ms(){
+void delay()
+{
   unsigned int i;
   TMOD = 0x01;
-  for(i = 0;i< 5; i++){
-    TLO = 0x00;
+   for(i=0;i<5;i++)
+	{
+    TL0 = 0x00;
     TH0 = 0x00;
     TR0 = 1;
     while(TF0 == 0);
     TR0 = 0;
     TF0 = 0;
-  }
+}
 }
